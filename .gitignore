@@ -1,0 +1,17 @@
+# Ignore default configuration files
+nginx/default.conf
+docker-compose.yml
+
+# Ignore www contents except for sample project structure
+www/*
+!www/project_a/
+www/project_a/*
+!www/project_a/index.php
+
+# Ignore database data directories
+mysql-8-data/
+postgresql-data/
+
+# Keep example files
+!nginx/default.conf.example
+!docker-compose.yml.example

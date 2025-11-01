@@ -1,0 +1,30 @@
+# nginx/default.conf.example
+# Salin file ini ke default.conf dan sesuaikan konfigurasinya
+server {
+    listen 80;
+    server_name localhost;
+    root /var/www/html;
+    index index.php index.html;
+
+    # --- Pengaturan Proyek A (PHP 8.3) ---
+    location /project_a {
+        alias /var/www/html/project_a;
+        try_files $uri $uri/ /project_a/index.php?$query_string;
+    }
+    location ~ /project_a/.*\.php$ {
+        include fastcgi_params;
+        fastcgi_pass php-83-fpm:9000; # Merutekan ke layanan PHP 8.3
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+    }
+
+    # --- Pengaturan Proyek B (PHP 7.4) ---
+    location /proyek_b {
+        alias /var/www/html/proyek_b;
+        try_files $uri $uri/ /proyek_b/index.php?$query_string;
+    }
+    location ~ /proyek_b/.*\.php$ {
+        include fastcgi_params;
+        fastcgi_pass php-74-fpm:9000; # Merutekan ke layanan PHP 7.4
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+    }
+}
