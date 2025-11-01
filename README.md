@@ -52,7 +52,7 @@ Repositori ini berisi lingkungan Docker yang lengkap untuk pengembangan PHP deng
    docker-compose up -d
    ```
 
-4. **Verifikasi Instalasi**
+6. **Verifikasi Instalasi**
    - Server Nginx: http://localhost:8080
    - Akses project_a: http://localhost:8080/project_a
 
@@ -157,6 +157,25 @@ Repositori ini berisi lingkungan Docker yang lengkap untuk pengembangan PHP deng
 - **Inisialisasi dengan skrip SQL**:
   Tempatkan file `.sql` di direktori `postgresql-data/` sebelum memulai layanan
 
+## Keamanan
+
+### Mengganti Password Database
+Untuk keamanan, sebaiknya ganti password default untuk database:
+
+1. Edit file `docker-compose.yml`
+2. Ubah nilai `MYSQL_ROOT_PASSWORD`, `MYSQL_PASSWORD`, `POSTGRES_PASSWORD` dengan password yang lebih kuat
+3. Restart container database dengan perintah:
+   ```bash
+   docker-compose restart db-mysql
+   docker-compose restart db-postgre
+   ```
+
+### Praktik Terbaik Keamanan
+- Jangan gunakan password default untuk produksi
+- Gunakan environment variables untuk menyimpan informasi sensitif
+- Batasi akses ke port database dari luar container
+- Perbarui image Docker secara berkala
+
 ## Penyelesaian Masalah
 
 1. **Konflik port**:
@@ -190,3 +209,63 @@ docker-compose stop
 Untuk benar-benar menghapus kontainer dan volume:
 ```bash
 docker-compose down -v
+```
+
+## Pengembangan dan Penyesuaian
+
+### Menambahkan Dependensi PHP
+Untuk menambahkan dependensi PHP tambahan:
+
+1. Masuk ke container PHP yang sesuai:
+   ```bash
+   # Untuk PHP 8.3
+   docker-compose exec php-83-fpm sh
+   
+   # Untuk PHP 7.4
+   docker-compose exec php-74-fpm sh
+   ```
+
+2. Instal package menggunakan package manager Alpine Linux:
+   ```bash
+   apk add --no-cache nama-package
+   ```
+
+3. Jika perlu ekstensi PHP tambahan:
+   ```bash
+   docker-php-ext-install nama-ekstensi
+   ```
+
+4. Setelah instalasi, restart container:
+   ```bash
+   docker-compose restart php-83-fpm
+   # atau
+   docker-compose restart php-74-fpm
+   ```
+
+### Menyesuaikan Konfigurasi PHP
+Untuk menyesuaikan konfigurasi PHP:
+
+1. Buat file konfigurasi kustom di direktori `php-83-fpm/` atau `php-74-fpm/`
+2. Tambahkan ke volume di `docker-compose.yml`:
+   ```yaml
+   volumes:
+     - ./php-83-fpm/custom.ini:/usr/local/etc/php/conf.d/custom.ini
+   ```
+
+### Menyesuaikan Konfigurasi Nginx
+Untuk menyesuaikan konfigurasi Nginx:
+
+1. Edit file `nginx/default.conf`
+2. Restart container Nginx:
+   ```bash
+   docker-compose restart nginx
+   ```
+
+### Mengelola Variabel Lingkungan
+Untuk mengelola variabel lingkungan:
+
+1. Edit file `.env` untuk mengubah nilai konfigurasi
+2. Restart container yang terpengaruh:
+   ```bash
+   docker-compose restart db-mysql db-postgre
+   ```

@@ -8,6 +8,10 @@ www/*
 www/project_a/*
 !www/project_a/index.php
 
+!www/project_b/
+www/project_b/*
+!www/project_b/index.php
+
 # Ignore database data directories
 mysql-8-data/
 postgresql-data/
