@@ -12,6 +12,14 @@ www/project_a/*
 www/project_b/*
 !www/project_b/index.php
 
+!www/php7/sample/
+www/php7/*
+!www/php7/sample/index.php
+
+!www/php8/sample/
+www/php8/*
+!www/php8/sample/index.php
+
 # Ignore database data directories
 mysql-8-data/
 postgresql-data/
@@ -19,3 +27,9 @@ postgresql-data/
 # Keep example files
 !nginx/default.conf.example
 !docker-compose.yml.example
+
+
+apache/vhosts/*.conf
+!apache/vhosts/php7.conf
+!apache/vhosts/php8.conf
+!apache/vhosts/laravel.conf

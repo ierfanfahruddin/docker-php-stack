@@ -1,271 +1,136 @@
-# Lingkungan Pengembangan Docker PHP
+# Laravel Filament dengan Apache
 
-Repositori ini berisi lingkungan Docker yang lengkap untuk pengembangan PHP dengan dukungan untuk beberapa versi PHP, database MySQL, dan PostgreSQL.
+Proyek ini adalah contoh konfigurasi untuk menjalankan aplikasi Laravel Filament menggunakan Apache sebagai pengganti Nginx, dengan dukungan untuk beberapa versi PHP.
 
-## Layanan yang Disertakan
+## Daftar Isi
 
-1. **Web Server Nginx** - Berjalan di port 8080
-2. **PHP 8.3 FPM** - Untuk aplikasi PHP modern
-3. **PHP 7.4 FPM** - Untuk aplikasi PHP lama
-4. **MySQL 8.0** - Layanan database
-5. **PostgreSQL 13** - Layanan database alternatif
+- [Prasyarat](#prasyarat)
+- [Instalasi](#instalasi)
+- [Menjalankan Aplikasi](#menjalankan-aplikasi)
+- [Struktur Direktori](#struktur-direktori)
+- [Menjalankan Proyek Baru](#menjalankan-proyek-baru)
+- [Konfigurasi Apache](#konfigurasi-apache)
+- [Penyelesaian Masalah](#penyelesaian-masalah)
+- [Lisensi](#lisensi)
 
-## Struktur Proyek
+## Prasyarat
 
-```
-├── docker-compose.yml          # Konfigurasi Docker Compose
-├── nginx/default.conf          # Konfigurasi server Nginx
-├── php-74-fpm/Dockerfile       # Konfigurasi Docker PHP 7.4 FPM
-├── php-83-fpm/Dockerfile       # Konfigurasi Docker PHP 8.3 FPM
-├── www/                        # Direktori file web
-│   └── project_a/              # Proyek PHP contoh
-│       └── index.php           # File PHP contoh
-├── mysql-8-data/               # Persistensi data MySQL
-├── postgresql-data/            # Persistensi data PostgreSQL
-└── README.md                   # File ini
-```
+Sebelum memulai, pastikan Anda telah menginstal:
+
+- Docker
+- Docker Compose
 
 ## Instalasi
 
-1. **Prasyarat**
-   - Instal Docker dan Docker Compose di sistem Anda
-   - Pastikan port 8080, 3306, dan 5432 tersedia
-
-2. **Klon atau Unduh Repositori**
+1. Clone repository ini ke direktori lokal Anda:
    ```bash
-   git clone https://github.com/ierfanfahruddin/docker-php-stack
-   cd docker-php-stack
+   git clone <url-repository> laravel-filament-apache
+   cd laravel-filament-apache
    ```
 
-3. **Siapkan File Konfigurasi**
-   Salin file konfigurasi contoh ke file yang sebenarnya:
+2. Pastikan Docker dan Docker Compose telah terinstal di sistem Anda.
+
+## Menjalankan Aplikasi
+
+1. Jalankan layanan dengan perintah:
    ```bash
-   cp nginx/default.conf.example nginx/default.conf
-   cp docker-compose.yml.example docker-compose.yml
+   docker compose -f docker-compose-apache.yml up -d
    ```
 
-4. **Sesuaikan Konfigurasi**
-   Edit file `nginx/default.conf` dan `docker-compose.yml` sesuai kebutuhan Anda.
+2. Tunggu beberapa saat hingga semua layanan berjalan.
 
-5. **Verifikasi Instalasi**
+3. Akses aplikasi di browser Anda melalui:
+   - `http://localhost:8080/` untuk aplikasi Laravel Filament
+   - `http://project-a.localhost:8080/` untuk contoh proyek A
+   - `http://project-b.localhost:8080/` untuk contoh proyek B
+   - `http://php7.localhost:8080/sample/` untuk contoh proyek PHP 7.4
+   - `http://php8.localhost:8080/sample/` untuk contoh proyek PHP 8.3
+
+4. Untuk menghentikan layanan:
    ```bash
-   docker-compose up -d
+   docker compose -f docker-compose-apache.yml down
    ```
 
-6. **Verifikasi Instalasi**
-   - Server Nginx: http://localhost:8080
-   - Akses project_a: http://localhost:8080/project_a
+## Struktur Direktori
 
-## Penggunaan
+```
+.
+├── apache/
+│   ├── httpd.conf          # Konfigurasi utama Apache
+│   └── vhosts/
+│       ├── laravel.conf  # Virtual host untuk aplikasi Laravel
+│       ├── php7.conf       # Virtual host untuk proyek PHP 7.4
+│       ├── php8.conf       # Virtual host untuk proyek PHP 8.3
+│       ├── project_a.conf  # Virtual host untuk proyek A
+│       └── project_b.conf  # Virtual host untuk proyek B
+├── docker-compose-apache.yml  # Konfigurasi Docker Compose
+├── php-83-fpm/
+│   └── Dockerfile          # Konfigurasi PHP 8.3 FPM
+├── php-74-fpm/
+│   └── Dockerfile          # Konfigurasi PHP 7.4 FPM
+├── www/
+│   ├── laravel/  # Aplikasi Laravel Filament
+│   ├── project_a/          # Contoh proyek sederhana
+│   ├── project_b/          # Contoh proyek dengan koneksi database
+│   ├── php7/               # Direktori untuk proyek PHP 7.4
+│   │   └── sample/         # Contoh proyek PHP 7.4
+│   └── php8/               # Direktori untuk proyek PHP 8.3
+│       └── sample/         # Contoh proyek PHP 8.3
+└── ...
+```
 
-### Mengakses Layanan
+## Menjalankan Proyek Baru
 
-- **Web Server**: http://localhost:8080
-- **Database MySQL**:
-  - Host: localhost
-  - Port: 3306
-  - User: dev_user
-  - Password: dev_pass
-  - Database: db_mysql
-- **Database PostgreSQL**:
-  - Host: localhost
-  - Port: 5432
-  - User: dev_user
-  - Password: dev_pass
-  - Database: db_postgre
+Untuk menambahkan proyek baru:
 
-### Bekerja dengan Proyek PHP
+1. **Untuk proyek yang membutuhkan PHP 7.4**:
+   - Letakkan file proyek Anda di direktori `www/php7/nama-proyek/`
+   - Akses proyek melalui `http://php7.localhost:8080/nama-proyek/`
 
-1. **Project A (PHP 8.3)**
-   - Terletak di `www/project_a/`
-   - Akses melalui http://localhost:8080/project_a
+2. **Untuk proyek yang membutuhkan PHP 8.3**:
+   - Letakkan file proyek Anda di direktori `www/php8/nama-proyek/`
+   - Akses proyek melalui `http://php8.localhost:8080/nama-proyek/`
 
-2. **Project B (PHP 7.4)**
-   - Terletak di `www/proyek_b/`
-   - Akses melalui http://localhost:8080/proyek_b
+3. **Untuk proyek khusus (seperti Laravel Filament)**:
+   - Buat direktori baru di `www/` dengan nama proyek Anda
+   - Tambahkan konfigurasi virtual host baru di `apache/vhosts/`
+   - Sesuaikan konfigurasi `docker-compose-apache.yml` jika diperlukan
+   - Akses proyek melalui URL yang telah dikonfigurasi
 
-### Mengelola Kontainer
+Tidak perlu konfigurasi tambahan untuk setiap proyek baru selama mengikuti struktur yang telah disediakan.
 
-- **Melihat kontainer yang berjalan**:
-  ```bash
-  docker-compose ps
-  ```
+## Konfigurasi Apache
 
-- **Melihat log**:
-  ```bash
-  docker-compose logs [nama-layanan]
-  ```
+Konfigurasi Apache telah dioptimalkan untuk aplikasi Laravel Filament dengan:
 
-- **Menghentikan semua layanan**:
-  ```bash
-  docker-compose down
-  ```
-
-- **Merestart layanan**:
-  ```bash
-  docker-compose restart
-  ```
-
-## Menambahkan Proyek Baru
-
-1. **Buat direktori proyek baru** di folder `www/`:
-   ```bash
-   mkdir www/nama-proyek-anda
-   ```
-
-2. **Tambahkan file PHP Anda** ke direktori baru
-
-3. **Konfigurasi Nginx** dengan mengedit `nginx/default.conf`:
-   ```nginx
-   location /nama-proyek-anda {
-       alias /var/www/html/nama-proyek-anda;
-       try_files $uri $uri/ /nama-proyek-anda/index.php?$query_string;
-   }
-   
-   location ~ /nama-proyek-anda/.*\.php$ {
-       include fastcgi_params;
-       # Pilih versi PHP (php-83-fpm:9000 atau php-74-fpm:9000)
-       fastcgi_pass php-83-fpm:9000;
-       fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
-   }
-   ```
-
-4. **Restart layanan Nginx**:
-   ```bash
-   docker-compose restart nginx
-   ```
-
-## Manajemen Database
-
-### MySQL
-
-- **Menghubungkan menggunakan klien MySQL**:
-  ```bash
-  mysql -h localhost -P 3306 -u dev_user -p db_mysql
-  ```
-
-- **Inisialisasi dengan skrip SQL**:
-  Tempatkan file `.sql` di direktori `mysql-8-data/` sebelum memulai layanan
-
-### PostgreSQL
-
-- **Menghubungkan menggunakan klien PostgreSQL**:
-  ```bash
-  psql -h localhost -p 5432 -U dev_user -d db_postgre
-  ```
-
-- **Inisialisasi dengan skrip SQL**:
-  Tempatkan file `.sql` di direktori `postgresql-data/` sebelum memulai layanan
-
-## Keamanan
-
-### Mengganti Password Database
-Untuk keamanan, sebaiknya ganti password default untuk database:
-
-1. Edit file `docker-compose.yml`
-2. Ubah nilai `MYSQL_ROOT_PASSWORD`, `MYSQL_PASSWORD`, `POSTGRES_PASSWORD` dengan password yang lebih kuat
-3. Restart container database dengan perintah:
-   ```bash
-   docker-compose restart db-mysql
-   docker-compose restart db-postgre
-   ```
-
-### Praktik Terbaik Keamanan
-- Jangan gunakan password default untuk produksi
-- Gunakan environment variables untuk menyimpan informasi sensitif
-- Batasi akses ke port database dari luar container
-- Perbarui image Docker secara berkala
+- Virtual host khusus untuk aplikasi laravel
+- Pengaturan rewrite rules yang sesuai untuk Laravel
+- Konfigurasi PHP-FPM yang terintegrasi
+- Penanganan khusus untuk direktori Livewire dan Filament
+- Virtual host terpisah untuk proyek PHP 7.4 dan 8.3
 
 ## Penyelesaian Masalah
 
-1. **Konflik port**:
-   - Pastikan port 8080, 3306, dan 5432 tidak digunakan
-   - Ubah port di `docker-compose.yml` jika diperlukan
+Jika mengalami error 405 Method Not Allowed:
 
-2. **Masalah izin**:
-   - Periksa izin file untuk volume yang dipasang
-   - Pastikan Docker memiliki izin yang diperlukan untuk mengakses file proyek
+1. Pastikan file `.env` di direktori aplikasi Laravel sudah dikonfigurasi dengan benar
+2. Periksa konfigurasi session di `config/session.php`
+3. Verifikasi bahwa CSRF token disertakan dalam request POST/PUT/PATCH/DELETE
+4. Cek log Apache untuk informasi lebih detail tentang error
 
-3. **Masalah koneksi database**:
-   - Verifikasi kredensial database di `docker-compose.yml`
-   - Periksa apakah kontainer database berjalan dengan `docker-compose ps`
+Jika mengalami masalah koneksi seperti "refused to connect":
 
-4. **Masalah versi PHP**:
-   - Konfirmasi layanan PHP-FPM yang benar ditentukan dalam konfigurasi Nginx
-   - Periksa log kontainer PHP-FPM dengan `docker-compose logs php-83-fpm`
+1. Pastikan semua layanan Docker berjalan dengan perintah `docker compose -f docker-compose-apache.yml up -d`
+2. Gunakan format URL yang benar: `http://[nama-virtual-host]:8080/` karena semua layanan dijalankan melalui port 8080
+3. Periksa file hosts sistem Anda jika perlu menambahkan entri untuk virtual host
 
-## Menghentikan Lingkungan
 
-Untuk menghentikan dan menghapus semua kontainer:
+Cara masuk ke fpm php:
+
 ```bash
-docker-compose down
+docker compose exec php-83-fpm sh
 ```
 
-Untuk menghentikan kontainer tetapi mempertahankan volume:
-```bash
-docker-compose stop
-```
+## Lisensi
 
-Untuk benar-benar menghapus kontainer dan volume:
-```bash
-docker-compose down -v
-```
-
-## Pengembangan dan Penyesuaian
-
-### Menambahkan Dependensi PHP
-Untuk menambahkan dependensi PHP tambahan:
-
-1. Masuk ke container PHP yang sesuai:
-   ```bash
-   # Untuk PHP 8.3
-   docker-compose exec php-83-fpm sh
-   
-   # Untuk PHP 7.4
-   docker-compose exec php-74-fpm sh
-   ```
-
-2. Instal package menggunakan package manager Alpine Linux:
-   ```bash
-   apk add --no-cache nama-package
-   ```
-
-3. Jika perlu ekstensi PHP tambahan:
-   ```bash
-   docker-php-ext-install nama-ekstensi
-   ```
-
-4. Setelah instalasi, restart container:
-   ```bash
-   docker-compose restart php-83-fpm
-   # atau
-   docker-compose restart php-74-fpm
-   ```
-
-### Menyesuaikan Konfigurasi PHP
-Untuk menyesuaikan konfigurasi PHP:
-
-1. Buat file konfigurasi kustom di direktori `php-83-fpm/` atau `php-74-fpm/`
-2. Tambahkan ke volume di `docker-compose.yml`:
-   ```yaml
-   volumes:
-     - ./php-83-fpm/custom.ini:/usr/local/etc/php/conf.d/custom.ini
-   ```
-
-### Menyesuaikan Konfigurasi Nginx
-Untuk menyesuaikan konfigurasi Nginx:
-
-1. Edit file `nginx/default.conf`
-2. Restart container Nginx:
-   ```bash
-   docker-compose restart nginx
-   ```
-
-### Mengelola Variabel Lingkungan
-Untuk mengelola variabel lingkungan:
-
-1. Edit file `.env` untuk mengubah nilai konfigurasi
-2. Restart container yang terpengaruh:
-   ```bash
-   docker-compose restart db-mysql db-postgre
-   ```
+MIT
