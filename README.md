@@ -10,6 +10,9 @@ Proyek ini adalah contoh konfigurasi untuk menjalankan aplikasi Laravel Filament
 - [Struktur Direktori](#struktur-direktori)
 - [Menjalankan Proyek Baru](#menjalankan-proyek-baru)
 - [Konfigurasi Apache](#konfigurasi-apache)
+- [Konfigurasi Environment](#konfigurasi-environment)
+- [Docker Compose](#docker-compose)
+- [Perintah Umum](#perintah-umum)
 - [Penyelesaian Masalah](#penyelesaian-masalah)
 - [Lisensi](#lisensi)
 
@@ -58,7 +61,7 @@ Sebelum memulai, pastikan Anda telah menginstal:
 ├── apache/
 │   ├── httpd.conf          # Konfigurasi utama Apache
 │   └── vhosts/
-│       ├── laravel.conf  # Virtual host untuk aplikasi Laravel
+│       ├── laravel.conf    # Virtual host untuk aplikasi Laravel
 │       ├── php7.conf       # Virtual host untuk proyek PHP 7.4
 │       ├── php8.conf       # Virtual host untuk proyek PHP 8.3
 │       ├── project_a.conf  # Virtual host untuk proyek A
@@ -69,7 +72,7 @@ Sebelum memulai, pastikan Anda telah menginstal:
 ├── php-74-fpm/
 │   └── Dockerfile          # Konfigurasi PHP 7.4 FPM
 ├── www/
-│   ├── laravel/  # Aplikasi Laravel Filament
+│   ├── laravel/            # Aplikasi Laravel Filament
 │   ├── project_a/          # Contoh proyek sederhana
 │   ├── project_b/          # Contoh proyek dengan koneksi database
 │   ├── php7/               # Direktori untuk proyek PHP 7.4
@@ -109,6 +112,88 @@ Konfigurasi Apache telah dioptimalkan untuk aplikasi Laravel Filament dengan:
 - Penanganan khusus untuk direktori Livewire dan Filament
 - Virtual host terpisah untuk proyek PHP 7.4 dan 8.3
 
+## Konfigurasi Environment
+
+File `.env` berisi konfigurasi untuk database MySQL dan PostgreSQL:
+
+```env
+# --- MySQL Credentials ---
+MYSQL_DATABASE=db_mysql
+MYSQL_USER=root # Atau user lain yang Anda inginkan
+MYSQL_PASSWORD=password # <-- Isi password
+MYSQL_ROOT_PASSWORD=root_password # <-- Isi password root
+
+# --- PostgreSQL Credentials ---
+POSTGRES_DB=db_postgre
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=postgres
+```
+
+Pastikan untuk mengganti password dengan yang lebih aman sebelum menjalankan aplikasi di lingkungan produksi.
+
+## Docker Compose
+
+File `docker-compose-apache.yml` mendefinisikan layanan berikut:
+
+- **apache**: Web server Apache 2.4
+- **php-83-fpm**: PHP 8.3 FPM
+- **php-74-fpm**: PHP 7.4 FPM
+- **db-mysql**: Database MySQL 8.0
+- **db-postgre**: Database PostgreSQL 13
+
+Setiap layanan telah dikonfigurasi dengan volume dan port yang sesuai untuk pengembangan lokal.
+
+## Perintah Umum
+
+### Masuk ke container PHP FPM:
+
+```bash
+# Untuk PHP 8.3
+docker compose -f docker-compose-apache.yml exec php-83-fpm sh
+
+# Untuk PHP 7.4
+docker compose -f docker-compose-apache.yml exec php-74-fpm sh
+```
+
+### Backup dan Restore Database PostgreSQL:
+
+Proses ini terdiri dari dua langkah utama: menyalin file backup ke dalam kontainer, lalu menjalankan restore.
+
+1. **Salin file backup ke dalam kontainer**:
+   Gunakan `docker cp` untuk menyalin file `.sql` atau `.backup` dari komputer Anda ke direktori `/tmp` di dalam kontainer.
+   ```bash
+   # Ganti /path/to/your/nama_file.sql dengan lokasi file Anda
+   docker cp /path/to/your/nama_file.sql db-postgre-13:/tmp/nama_file.sql
+   ```
+
+2. **Jalankan perintah restore**:
+   Gunakan `docker exec` untuk menjalankan `psql` di dalam kontainer, menunjuk ke file yang baru saja Anda salin.
+   ```bash
+   # Pastikan database 'nama_db' sudah dibuat sebelumnya
+   docker exec -it db-postgre-13 psql -U postgres -d nama_db -f /tmp/nama_file.sql
+   ```
+
+3. (Opsional) Hapus file backup dari kontainer:
+
+Setelah proses restore selesai, Anda bisa menghapus file backup dari direktori `/tmp` di dalam kontainer untuk menghemat ruang.
+```bash
+docker exec -it db-postgre-13 rm /tmp/nama_file.sql
+```
+
+### Melihat log container:
+
+```bash
+# Melihat log Apache
+docker compose -f docker-compose-apache.yml logs apache
+
+# Melihat log PHP FPM
+docker compose -f docker-compose-apache.yml logs php-83-fpm
+
+# Melihat log database
+docker compose -f docker-compose-apache.yml logs db-mysql
+docker compose -f docker-compose-apache.yml logs db-postgre
+```
+
 ## Penyelesaian Masalah
 
 Jika mengalami error 405 Method Not Allowed:
@@ -124,13 +209,6 @@ Jika mengalami masalah koneksi seperti "refused to connect":
 2. Gunakan format URL yang benar: `http://[nama-virtual-host]:8080/` karena semua layanan dijalankan melalui port 8080
 3. Periksa file hosts sistem Anda jika perlu menambahkan entri untuk virtual host
 
-
-Cara masuk ke fpm php:
-
-```bash
-docker compose exec php-83-fpm sh
-```
-
 ## Lisensi
 
-MIT
+Proyek ini dilisensikan di bawah [MIT License](LICENSE).

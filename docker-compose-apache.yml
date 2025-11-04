@@ -42,10 +42,10 @@ services:
     image: mysql/mysql-server:8.0
     container_name: db-mysql-80
     environment:
-      MYSQL_ROOT_PASSWORD: root_pass
-      MYSQL_DATABASE: db_mysql
-      MYSQL_USER: dev_user
-      MYSQL_PASSWORD: dev_pass
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     volumes:
       - mysql_data:/var/lib/mysql
 
@@ -53,10 +53,12 @@ services:
   db-postgre:
     image: postgres:13-alpine
     container_name: db-postgre-13
+    ports:
+      - "5432:5432"
     environment:
-      POSTGRES_DB: db_postgre
-      POSTGRES_USER: dev_user
-      POSTGRES_PASSWORD: dev_pass
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
