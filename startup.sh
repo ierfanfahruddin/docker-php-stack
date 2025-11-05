@@ -22,7 +22,8 @@
 # ==============================================================================
 
 # Variabel untuk perintah dasar Docker Compose
-COMPOSE_CMD="docker compose -f docker-compose-apache.yml"
+COMPOSE_CMD="docker compose -f /home/ierfan/docker/docker-compose-apache.yml"
+
 
 # Mengambil argumen pertama (perintah)
 COMMAND=$1
