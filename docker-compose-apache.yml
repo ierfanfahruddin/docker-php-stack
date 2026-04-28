@@ -1,4 +1,3 @@
-version: '3.8'
 
 services:
   # --- WEB SERVER (Apache) ---
@@ -16,6 +15,7 @@ services:
     depends_on:
       - php-83-fpm
       - php-74-fpm
+      # - marketing-swarm-api # Tambahkan dependensi
 
   # --- PHP FPM 8.3 ---
   php-83-fpm:
@@ -63,6 +63,16 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
       - postgres_data:/var/lib/postgresql/data
+
+  # --- Layanan Node.js untuk Marketing Swarm API ---
+  # marketing-swarm-api:
+  #   build:
+  #     context: ./www/ai-generate-content
+  #   container_name: marketing-swarm-api
+  #   working_dir: /usr/src/app
+  #   volumes:
+  #     - ./www/ai-generate-content:/usr/src/app
+  #   command: "npm start"
 
 volumes:
   mysql_data:
