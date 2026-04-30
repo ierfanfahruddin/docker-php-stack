@@ -63,6 +63,7 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - /c/Users/ierfa/Downloads/Compressed:/backup
 
   # --- Layanan Node.js untuk Marketing Swarm API ---
   # marketing-swarm-api:
