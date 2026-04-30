@@ -56,14 +56,14 @@ services:
     image: postgres:15-alpine
     container_name: db-postgre-15
     ports:
-      - "5433:5432"
+      - "5432:5432"
     environment:
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - /c/Users/ierfa/Downloads/Compressed:/backup
+      - /mnt/c/Users/ierfa/Downloads/Compressed:/backup
 
   # --- Layanan Node.js untuk Marketing Swarm API ---
   # marketing-swarm-api:
