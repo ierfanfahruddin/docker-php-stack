@@ -53,8 +53,8 @@ services:
 
   # --- DATABASE (PostgreSQL 13) ---
   db-postgre:
-    image: postgres:13-alpine
-    container_name: db-postgre-13
+    image: postgres:15-alpine
+    container_name: db-postgre-15
     ports:
       - "5432:5432"
     environment:
