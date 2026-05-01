@@ -27,8 +27,8 @@ Sebelum memulai, pastikan Anda telah menginstal:
 
 1. Clone repository ini ke direktori lokal Anda:
    ```bash
-   git clone <url-repository> laravel-filament-apache
-   cd laravel-filament-apache
+   git clone <url-repository> docker-php-stack
+   cd docker-php-stack
    ```
 
 2. Pastikan Docker dan Docker Compose telah terinstal di sistem Anda.
