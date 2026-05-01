@@ -159,25 +159,31 @@ docker compose -f docker-compose-apache.yml exec php-74-fpm sh
 
 Proses ini terdiri dari dua langkah utama: menyalin file backup ke dalam kontainer, lalu menjalankan restore.
 
+Catatan performa penting (Windows + WSL):
+
+- Jika file dump berada di path Windows (contoh: `/mnt/c/...`) dan diakses dari container Linux, proses import bisa jauh lebih lambat.
+- Untuk import besar, simpan file backup di filesystem WSL (contoh: `/home/<user>/backup`) lalu lakukan restore dari sana.
+- Hindari import langsung dari folder Windows saat kebutuhan utamanya adalah kecepatan.
+
 1. **Salin file backup ke dalam kontainer**:
    Gunakan `docker cp` untuk menyalin file `.sql` atau `.backup` dari komputer Anda ke direktori `/tmp` di dalam kontainer.
    ```bash
    # Ganti /path/to/your/nama_file.sql dengan lokasi file Anda
-   docker cp /path/to/your/nama_file.sql db-postgre-13:/tmp/nama_file.sql
+   docker cp /path/to/your/nama_file.sql db-postgre-15:/tmp/nama_file.sql
    ```
 
 2. **Jalankan perintah restore**:
    Gunakan `docker exec` untuk menjalankan `psql` di dalam kontainer, menunjuk ke file yang baru saja Anda salin.
    ```bash
    # Pastikan database 'nama_db' sudah dibuat sebelumnya
-   docker exec -it db-postgre-13 psql -U postgres -d nama_db -f /tmp/nama_file.sql
+   docker exec -it db-postgre-15 psql -U postgres -d nama_db -f /tmp/nama_file.sql
    ```
 
 3. (Opsional) Hapus file backup dari kontainer:
 
 Setelah proses restore selesai, Anda bisa menghapus file backup dari direktori `/tmp` di dalam kontainer untuk menghemat ruang.
 ```bash
-docker exec -it db-postgre-13 rm /tmp/nama_file.sql
+docker exec -it db-postgre-15 rm /tmp/nama_file.sql
 ```
 
 ### Melihat log container:
