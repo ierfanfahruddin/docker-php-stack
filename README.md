@@ -1,6 +1,6 @@
-# Laravel Filament dengan Apache
+# Docker PHP Stack dengan Apache
 
-Proyek ini adalah contoh konfigurasi untuk menjalankan aplikasi Laravel Filament menggunakan Apache sebagai pengganti Nginx, dengan dukungan untuk beberapa versi PHP.
+Proyek ini adalah contoh konfigurasi untuk menjalankan berbagai aplikasi PHP menggunakan Apache sebagai web server, dengan dukungan untuk beberapa versi PHP (7.4 dan 8.3).
 
 ## Daftar Isi
 
@@ -164,6 +164,25 @@ Catatan performa penting (Windows + WSL):
 - Jika file dump berada di path Windows (contoh: `/mnt/c/...`) dan diakses dari container Linux, proses import bisa jauh lebih lambat.
 - Untuk import besar, simpan file backup di filesystem WSL (contoh: `/home/<user>/backup`) lalu lakukan restore dari sana.
 - Hindari import langsung dari folder Windows saat kebutuhan utamanya adalah kecepatan.
+
+**Jika file backup dalam format `.zip` dari Windows**, ikuti alur berikut sebelum langkah 1:
+
+1. Salin file `.zip` dari Windows ke filesystem WSL terlebih dahulu:
+   ```bash
+   cp /mnt/c/Users/<user>/Downloads/nama_file.zip ~/backup/nama_file.zip
+   ```
+
+2. Ekstrak file `.zip` di dalam WSL:
+   ```bash
+   cd ~/backup
+   unzip nama_file.zip
+   # Pastikan file .sql hasil ekstrak ada di direktori ini
+   ls -lh ~/backup/
+   ```
+
+   > Jika `unzip` belum tersedia: `sudo apt install unzip`
+
+Setelah file `.sql` tersedia di filesystem WSL, lanjutkan ke langkah 1 di bawah seperti biasa.
 
 1. **Salin file backup ke dalam kontainer**:
    Gunakan `docker cp` untuk menyalin file `.sql` atau `.backup` dari komputer Anda ke direktori `/tmp` di dalam kontainer.
