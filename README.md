@@ -27,7 +27,7 @@ Sebelum memulai, pastikan Anda telah menginstal:
 
 1. Clone repository ini ke direktori lokal Anda:
    ```bash
-   git clone <url-repository> docker-php-stack
+   git clone https://github.com/ierfanfahruddin/docker-php-stack
    cd docker-php-stack
    ```
 
