@@ -221,6 +221,56 @@ docker compose -f docker-compose-apache.yml logs db-postgre
 
 ## Penyelesaian Masalah
 
+Jika project di WSL tiba-tiba menampilkan ribuan file berubah (permission/filemode):
+
+Masalah ini terjadi karena Git melacak perubahan permission file di WSL. Penyebabnya adalah config `core.filemode=true` di level **lokal repo** yang meng-override config global.
+
+1. Cek config yang aktif di repo:
+   ```bash
+   git config --list | grep filemode
+   ```
+   Jika muncul dua baris dan salah satunya `core.filemode=true`, lanjut ke langkah berikut.
+
+2. Set `core.filemode=false` di level **lokal repo** (jalankan di dalam direktori project):
+   ```bash
+   git config core.filemode false
+   ```
+
+3. Verifikasi — semua perubahan permission seharusnya hilang dari Source Control:
+   ```bash
+   git status
+   ```
+
+> **Catatan:** Jangan gunakan `git config --global core.filemode false` saja, karena config lokal repo akan tetap override-nya. Perintah harus dijalankan di dalam direktori project masing-masing.
+
+Jika `git pull` error `Permission denied` / `unable to unlink old`:
+
+Masalah ini terjadi karena file di dalam project **dimiliki oleh user Docker container** (biasanya UID `82` milik PHP-FPM), bukan user WSL. Akibatnya Git tidak bisa menghapus/replace file saat pull.
+
+1. Cek owner file yang bermasalah:
+   ```bash
+   ls -la path/ke/file/yang/error
+   ```
+   Jika terlihat angka (misal `82 82`) bukan nama user Anda, lanjut ke langkah berikut.
+
+2. Ganti ownership seluruh folder project ke user WSL Anda (jalankan di direktori project):
+   ```bash
+   sudo chown -R namauser:namauser /path/ke/project
+   # Contoh:
+   sudo chown -R ierfan:ierfan /home/ierfan/projects/docker-php-stack/www/php7/simrs/simrs_slawi
+   ```
+
+3. Jalankan git pull lagi:
+   ```bash
+   git pull
+   ```
+
+> **Pencegahan:** Ini terjadi karena Docker container menulis file dengan user container-nya. Untuk mencegah berulang, tambahkan `user` di service PHP-FPM pada `docker-compose-apache.yml`:
+> ```yaml
+> php-74-fpm:
+>   user: "1000:1000"  # Sesuaikan dengan UID user WSL Anda (cek dengan: id -u)
+> ```
+
 Jika mengalami error 405 Method Not Allowed:
 
 1. Pastikan file `.env` di direktori aplikasi Laravel sudah dikonfigurasi dengan benar

@@ -66,6 +66,14 @@ echo "============================================================"
 docker compose -f "$COMPOSE_FILE" ps
 echo "============================================================"
 echo ""
+# --- Set permission folder simrs ---
+if [ -f "./set-permission-simrs.sh" ]; then
+    echo "[INFO] Menjalankan set-permission-simrs.sh ..."
+    bash ./set-permission-simrs.sh
+else
+    echo "[WARN]  File set-permission-simrs.sh tidak ditemukan, permission tidak di-set."
+fi
+echo ""
 echo "[OK]    Semua service berhasil dijalankan."
 echo ""
 echo "  Tips perintah berguna:"
