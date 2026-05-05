@@ -23,3 +23,7 @@ find "$TARGET_ROOT" -type d \( -name tmp -o -name captcha \) -print0 | while IFS
   chmod -R 777 "$dir"
 done
 echo "[OK]    Semua folder tmp dan captcha di $TARGET_ROOT sudah di-set ke 777."
+
+echo "[INFO] Menjalankan chown -R $USER:$USER pada $TARGET_ROOT ..."
+echo "000000" | sudo -S chown -R $USER:$USER "$TARGET_ROOT"
+echo "[OK]    chown selesai."
