@@ -22,6 +22,9 @@ RUN apk add --no-cache --virtual .build-deps $PHPIZE_DEPS \
     # Hapus build dependencies
     && apk del .build-deps
 
+# Copy custom PHP ini settings
+COPY custom.ini /usr/local/etc/php/conf.d/custom.ini
+
 WORKDIR /var/www/html
 
 # Set correct permissions for the web root.
